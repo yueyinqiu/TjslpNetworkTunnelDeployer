@@ -9,6 +9,7 @@ using SingBoxLib.Configuration.Inbound.Abstract;
 using SingBoxLib.Configuration.Outbound;
 using SingBoxLib.Configuration.Shared;
 using System.Diagnostics;
+using System.Text;
 using TjslpNetworkTunnelDeployer.Extensions;
 
 
@@ -101,6 +102,16 @@ partial class DeployCommand : ICommand
                 }
             ]
         };
+
+        var remoteScript =
+            $"""
+            SING_BOX_WORKING_DIRECTORY="$(mktemp -d -t XXXXXXXXXXXXXXXXXXXX)"
+            mkdir "$SING_BOX_WORKING_DIRECTORY"
+            echo "{remoteSingBoxConfig.ToBase64()}" | base64 -d > "$SING_BOX_WORKING_DIRECTORY/config.json"
+            trap 'rm -rf "$SING_BOX_WORKING_DIRECTORY"; kill 0' EXIT
+            "{tunnel.Tools.SingBox}" run -D "$SING_BOX_WORKING_DIRECTORY"
+            """.ReplaceLineEndings("\n");
+        var remoteScriptBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(remoteScript));
         var command = new StartProcessConfiguration(
             Environment.ProcessId,
             localTools.Ssh,
@@ -110,9 +121,9 @@ partial class DeployCommand : ICommand
                 "-p", $"{tunnel.Ssh.Port}",
                 $"{tunnel.Ssh.User}@{tunnel.Ssh.Host}",
                 "-R", $"{tunnel.Forward.PortLocal}:127.0.0.1:{tunnel.SingBox.Port}",
-                $"trap 'kill 0' EXIT; \"{tunnel.Tools.SingBox}\" run -c /dev/stdin -D /tmp/{Guid.NewGuid:N}"
+                $"bash -c \"echo {remoteScriptBase64} | base64 -d | bash\""
             ],
-            remoteSingBoxConfig.ToJson(),
+            "",
             logDirectory.GetFileInfo("ssh.out.txt").FullName,
             logDirectory.GetFileInfo("ssh.err.txt").FullName
         ).PrepareToRunStartProcessInNewProcess(

@@ -21,5 +21,10 @@ internal static class SingBoxConfigExtensions
             using var document = JsonDocument.Parse(json);
             return JsonSerializer.Serialize(document, prettyJsonOptions);
         }
+        public string ToBase64()
+        {
+            var json = singBoxConfig.ToJson();
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        }
     }
 }
