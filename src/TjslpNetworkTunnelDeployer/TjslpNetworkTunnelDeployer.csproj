@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CliFx" Version="3.0.0" />
+		<PackageReference Include="CliWrap" Version="3.10.1" />
+		<PackageReference Include="PathExtensions" Version="1.0.2" />
+		<PackageReference Include="SingBoxLib" Version="1.2.1" />
+	</ItemGroup>
+
+</Project>

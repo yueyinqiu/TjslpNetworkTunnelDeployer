@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "GenerateConfiguration": {
+      "commandName": "Project",
+      "commandLineArgs": "generate-configuration"
+    },
+    "Deploy": {
+      "commandName": "Project",
+      "commandLineArgs": "deploy -c config.json -d outputs"
+    }
+  }
+}
