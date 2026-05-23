@@ -106,7 +106,6 @@ partial class DeployCommand : ICommand
         var remoteScript =
             $"""
             SING_BOX_WORKING_DIRECTORY="$(mktemp -d -t XXXXXXXXXXXXXXXXXXXX)"
-            mkdir "$SING_BOX_WORKING_DIRECTORY"
             echo "{remoteSingBoxConfig.ToBase64()}" | base64 -d > "$SING_BOX_WORKING_DIRECTORY/config.json"
             trap 'rm -rf "$SING_BOX_WORKING_DIRECTORY"; kill 0' EXIT
             "{tunnel.Tools.SingBox}" run -D "$SING_BOX_WORKING_DIRECTORY"
@@ -118,6 +117,8 @@ partial class DeployCommand : ICommand
             [
                 "-tt",
                 "-o", "ExitOnForwardFailure=yes",
+                "-o", "ServerAliveInterval=60",
+                "-o", "ServerAliveCountMax=3",
                 "-p", $"{tunnel.Ssh.Port}",
                 $"{tunnel.Ssh.User}@{tunnel.Ssh.Host}",
                 "-R", $"{tunnel.Forward.PortLocal}:127.0.0.1:{tunnel.SingBox.Port}",

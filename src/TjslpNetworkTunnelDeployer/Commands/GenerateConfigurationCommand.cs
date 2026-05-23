@@ -38,7 +38,7 @@ partial class GenerateConfigurationCommand : ICommand
             .Select(x => x.ToString())
             .ToArray();
         console.WriteLine($"Detected login nodes: {string.Join(',', addresses)}");
-        console.Write($"Please filter the login nodes (separate multiple IP addresses with commas):");
+        console.Write($"Please filter the login nodes (separate multiple IP addresses with commas): ");
         addresses = (console.ReadLine() ?? "").Split(',');
         console.WriteLine();
         console.WriteLine();
